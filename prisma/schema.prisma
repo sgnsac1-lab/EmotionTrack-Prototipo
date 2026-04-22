@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- MODELOS DE EMOTIONTRACK EXPO ---
+
+model Usuario {
+  id            String   @id
+  nombre        String
+  correo        String   @unique
+  avatarUrl     String?
+  eventos       Evento[]
+  configuracion Configuracion?
+}
+
+model Evento {
+  id              String   @id @default(cuid())
+  nombre          String   // Ej: "Expo Innovación 2026"
+  ubicacion       String   // Ej: "Centro de Convenciones"
+  fecha           DateTime
+  asistentesTotal Int      @default(0)
+  estado          String   @default("PROGRAMADO") // "VIVO", "PROGRAMADO", "FINALIZADO"
+  
+  // Relaciones
+  usuarioId       String
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  charlas         Charla[]
+  salas           Sala[]
+  metricas        Metrica[] // Datos históricos para las gráficas
+  reporte         Reporte?
+}
+
+model Charla {
+  id        String   @id @default(cuid())
+  titulo    String   // Ej: "Bienvenida: Hercilia San Martin"
+  hora      DateTime
+  host      String
+  eventoId  String
+  evento    Evento   @relation(fields: [eventoId], references: [id])
+}
+
+model Sala {
+  id          String @id @default(cuid())
+  nombre      String // Ej: "Auditorio Principal"
+  engagement  Float  @default(0) // Porcentaje actual (VIVO)
+  eventoId    String
+  evento      Evento @relation(fields: [eventoId], references: [id])
+}
+
+model Metrica {
+  id            String   @id @default(cuid())
+  timestamp     DateTime @default(now())
+  atencion      Float
+  interes       Float
+  aburrimiento  Float
+  desconexion   Float
+  eventoId      String
+  evento        Evento   @relation(fields: [eventoId], references: [id])
+}
+
+model Reporte {
+  id              String @id @default(cuid())
+  eventoId        String @unique
+  evento          Evento @relation(fields: [eventoId], references: [id])
+  
+  // Métricas promedio para la pantalla de Reportes
+  interesPromedio    Float
+  atencionPromedio   Float
+  satisfaccion       Float
+  retencion          Float
+  conclusionesIA     String @db.Text
+}
+
+model Configuracion {
+  id                String  @id @default(cuid())
+  usuarioId         String  @unique
+  usuario           Usuario @relation(fields: [usuarioId], references: [id])
+  
+  anonimizacionBlur Boolean @default(true)
+  eliminarTrasProcesar Boolean @default(true)
+  consentimiento    Boolean @default(false)
+}

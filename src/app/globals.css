@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+html{
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+
+input{
+    padding: 5px;
+    border: solid 2px;
+    border-color: slategray;
+    border-radius: 10px;
+    outline-color: #4ade80;
+    color: white;
+}
