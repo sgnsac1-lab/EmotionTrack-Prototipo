@@ -9,10 +9,12 @@ export async function crearEventoAction(data: any) {
   if (!user) return { success: false, error: "No autorizado" };
 
   try {
+    const fechaString = data.fecha; 
+    const fechaLocal = new Date(`${fechaString}T00:00:00`);
     const nuevoEvento = await prisma.evento.create({
       data: {
         nombre: data.nombre,
-        fecha: new Date(data.fecha),
+        fecha: fechaLocal,
         ubicacion: data.ubicacion,
         asistentesTotal: Number(data.asistentesTotal) || 0,
         usuarioId: user.id,
