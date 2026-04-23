@@ -9,6 +9,8 @@ export default async function dashboard(){
     include: { salas: true }
   });
 
+  const idsEventosVivos = eventosActivos.map(e => e.id)
+
   // 2. Cálculos para los KPIs
   const asistentesHoy = eventosActivos.reduce((acc, curr) => acc + (curr.asistentesTotal || 0), 0);
   
@@ -19,9 +21,13 @@ export default async function dashboard(){
   // 3. Traer promedio de atención de las métricas de hoy (última hora)
   const metricasRecientes = await prisma.metrica.aggregate({
     where: {
+      eventoId: { in: idsEventosVivos }, // Solo métricas de lo que está pasando ahora
       timestamp: { gte: new Date(Date.now() - 60 * 60 * 1000) } // Última hora
     },
-    _avg: { atencion: true }
+    _avg: { 
+      atencion: true,
+      engagement: true 
+    }
   });
 
   const atencionPromedio = Math.round(metricasRecientes._avg.atencion || 0);

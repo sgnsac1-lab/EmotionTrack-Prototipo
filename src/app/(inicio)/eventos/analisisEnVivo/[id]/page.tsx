@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {registrarMetricaAction, getSalasByEvento} from '@/app/actions/evento-action'
 import {finalizarYGenerarReporte} from '@/app/actions/reporte-actions'
+import {calcularEnfoqueVisual} from '@/app/lib/headPose'
 import {useParams} from 'next/navigation'
 import * as faceapi from 'face-api.js';
 import Link from 'next/link';
@@ -32,6 +33,7 @@ export default function AnalisisEnVivo() {
   const [emotionsData, setEmotionsData] = useState<AudienceEmotions>({
     happy: 0, neutral: 0, sad: 0, angry: 0, surprised: 0
   });
+  const [focusVisual, setFocusVisual] = useState(0)
 
   useEffect(() => {
     const fetchSalas = async () => {
@@ -53,6 +55,7 @@ export default function AnalisisEnVivo() {
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
         ]);
         setModelsLoaded(true);
       } catch (e) {
@@ -94,76 +97,114 @@ export default function AnalisisEnVivo() {
     setPeopleCount(0);
   };
 
-  // 4. Lógica de Análisis
   const handleVideoPlay = () => {
-    if (!canvasRef.current || !videoRef.current) return;
+  if (!canvasRef.current || !videoRef.current) return;
 
-    const displaySize = { 
-      width: 640, 
-      height: 480 
+  const displaySize = { width: 640, height: 480 };
+  faceapi.matchDimensions(canvasRef.current, displaySize);
+
+  intervalRef.current = setInterval(async () => {
+  if (!videoRef.current || videoRef.current.paused || videoRef.current.ended) return;
+
+  // 1. Detección con Landmarks y Expresiones
+  const detections = await faceapi
+    .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.5 }))
+    .withFaceLandmarks()
+    .withFaceExpressions();
+
+  // 2. Limpieza de Canvas (Indispensable para no dejar "fantasmas")
+  if (canvasRef.current) {
+    const context = canvasRef.current.getContext('2d');
+    context?.clearRect(0, 0, displaySize.width, displaySize.height);
+    
+    // Solo dibujamos si hay alguien
+    if (detections.length > 0) {
+      const resizedDetections = faceapi.resizeResults(detections, displaySize);
+      faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+    }
+  }
+
+  // 3. Lógica de Negocio
+  if (detections.length > 0) {
+    setPeopleCount(detections.length);
+    
+    let sH = 0, sN = 0, sS = 0, sA = 0, sSu = 0, sFoco = 0;
+
+    detections.forEach((det) => {
+      sH += det.expressions.happy;
+      sN += det.expressions.neutral;
+      sS += det.expressions.sad;
+      sA += det.expressions.angry;
+      sSu += det.expressions.surprised;
+      
+      // Cálculo de Foco Visual (Orientación de cabeza)
+      sFoco += calcularEnfoqueVisual(det.landmarks);
+    });
+
+    const n = detections.length;
+    const avg = {
+      happy: Math.round((sH / n) * 100),
+      neutral: Math.round((sN / n) * 100),
+      sad: Math.round((sS / n) * 100),
+      angry: Math.round((sA / n) * 100),
+      surprised: Math.round((sSu / n) * 100),
+      foco: Math.round(sFoco / n),
     };
-    faceapi.matchDimensions(canvasRef.current, displaySize);
 
-    intervalRef.current = setInterval(async () => {
-      if (!videoRef.current || videoRef.current.paused || videoRef.current.ended) return;
+    setEmotionsData(avg);
+    setFocusVisual(avg.foco);
 
-      const detections = await faceapi
-        .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.5 }))
-        .withFaceExpressions();
+    // NUEVA LÓGICA DE ENGAGEMENT PRO (Ponderada)
+    const engagementCalculado = Math.round(
+      (avg.foco * 0.5) +      // 50% Atención visual
+      (avg.happy * 0.2) +     // 20% Felicidad
+      (avg.surprised * 0.2) + // 20% Sorpresa
+      (avg.neutral * 0.1)     // 10% Neutralidad (Atención base)
+    );
 
-      if (canvasRef.current) {
-        const context = canvasRef.current.getContext('2d');
-        context?.clearRect(0, 0, displaySize.width, displaySize.height);
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
-        // Dibuja el recuadro azul
-        faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
-      }
+    setEngagement(engagementCalculado);
 
-      if (detections.length > 0) {
-        setPeopleCount(detections.length);
-        let sH = 0, sN = 0, sS = 0, sA = 0, sSu = 0;
+    // Guardado en Base de Datos cada 60 seg
+    const ahora = Date.now();
+    if (ahora - lastSaveRef.current > 60000) { 
+      lastSaveRef.current = ahora;
 
-        detections.forEach((det) => {
-          sH += det.expressions.happy;
-          sN += det.expressions.neutral;
-          sS += det.expressions.sad;
-          sA += det.expressions.angry;
-          sSu += det.expressions.surprised;
-        });
+      const payload = {
+        engagement: engagementCalculado,
+        atencion: Math.round((avg.foco * 0.7) + (avg.neutral * 0.3)),
+        interes: Math.round(avg.happy + avg.surprised),
+        aburrimiento: avg.neutral > 70 ? 40 : 10,
+        desconexion: Math.round(100 - avg.foco)
+      };
 
-        const n = detections.length;
-        const avg = {
-          happy: Math.round((sH / n) * 100),
-          neutral: Math.round((sN / n) * 100),
-          sad: Math.round((sS / n) * 100),
-          angry: Math.round((sA / n) * 100),
-          surprised: Math.round((sSu / n) * 100),
-        };
+      registrarMetricaAction(idEvento as string, salaSelected, payload);
+      console.log("Métrica Pro guardada en DB ✅");
+    }
+  } 
+  // 4. RESET TOTAL SI NO HAY CARAS
+  else {
+    setPeopleCount(0);
+    setFocusVisual(0);
+    setEngagement(0);
+    setEmotionsData({ happy: 0, neutral: 0, sad: 0, angry: 0, surprised: 0 });
 
-        setEmotionsData(avg);
-        setEngagement(Math.round((avg.happy * 0.7) + (avg.surprised * 0.3)));
-
-        const ahora = Date.now();
-      if (ahora - lastSaveRef.current > 60000) { 
-        lastSaveRef.current = ahora;
-
-        // Traducimos IA -> Tu Modelo
-        const payload = {
-          engagement: Math.round((avg.happy * 0.7) + (avg.surprised * 0.3)),
-          atencion: avg.neutral + (avg.happy * 0.5),
-          interes: avg.happy + avg.surprised,
-          aburrimiento: avg.neutral > 60 ? avg.neutral : 10,
-          desconexion: avg.sad + avg.angry
-        };
-
-        // LLAMADA A LA DB (Sin bloquear la UI)
-        registrarMetricaAction(idEvento as string, salaSelected, payload);
-        console.log("Métrica guardada en DB ✅");
-      }
-      }
-  
-    }, 1000);
-  };
+    // Opcional: Guardar métrica de "Sala Vacía" si pasa el minuto
+    const ahora = Date.now();
+    if (ahora - lastSaveRef.current > 60000) {
+      lastSaveRef.current = ahora;
+      const emptyPayload = {
+        engagement: 0,
+        atencion: 0,
+        interes: 0,
+        aburrimiento: 100, // Nadie mirando = aburrimiento total
+        desconexion: 100
+      };
+      registrarMetricaAction(idEvento as string, salaSelected, emptyPayload);
+      console.log("Métrica de Sala Vacía guardada ✅");
+    }
+  }
+}, 1000);
+};
 
   const renderEmotionCard = (label: string, value: number, color: string, emoji: string) => (
     <div className="bg-black/40 border border-[#333] rounded-2xl p-4 flex flex-col items-center justify-center">
@@ -258,6 +299,19 @@ export default function AnalisisEnVivo() {
                         <div className="flex flex-col items-center justify-center mb-10 py-8 bg-black/30 rounded-3xl border border-[#333]">
                             <span className="text-8xl font-black text-white tracking-tighter">{engagement}%</span>
                             <span className="text-slate-400 uppercase tracking-[0.3em] text-[11px] mt-3">Engagement Total</span>
+                        </div>
+
+                        <div className="bg-[#1a1a1a] border border-[#333] p-5 rounded-3xl transition-all hover:border-cyan-400/30">
+                          <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mb-1">Foco Visual</p>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-2xl md:text-3xl font-black text-cyan-400">
+                              {focusVisual}%
+                            </h4>
+                            <div className={`w-2 h-2 rounded-full animate-pulse ${focusVisual > 70 ? 'bg-cyan-400' : 'bg-red-500'}`} />
+                          </div>
+                          <p className="text-[9px] text-slate-500 mt-2 font-medium">
+                            {focusVisual > 70 ? "Audiencia Conectada" : "Posible Distracción"}
+                          </p>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

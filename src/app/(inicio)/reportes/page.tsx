@@ -1,17 +1,24 @@
 import { prisma } from '@/app/lib/prisma';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function ReportePagina() {
+  
   // 1. Buscamos el reporte del ÚLTIMO evento que haya sido FINALIZADO
   const reporte = await prisma.reporte.findFirst({
-    orderBy: {
+    where: {
       evento: {
-        fecha: 'desc' // Trae el más reciente primero
+        estado: 'FINALIZADO'
       }
+    },
+    orderBy: {
+      id: 'desc'
     },
     include: {
       evento: true 
     }
   });
+
 
   // 2. Si no hay ningún reporte todavía, mostramos un aviso
   if (!reporte) {

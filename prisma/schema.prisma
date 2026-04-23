@@ -64,6 +64,7 @@ model Metrica {
   interes       Float
   aburrimiento  Float
   desconexion   Float
+  engagement    Float
   eventoId      String
   evento        Evento   @relation(fields: [eventoId], references: [id])
 }

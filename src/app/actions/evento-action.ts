@@ -82,6 +82,7 @@ export async function registrarMetricaAction(eventoId: string, salaId: string, d
         interes: data.interes,
         aburrimiento: data.aburrimiento,
         desconexion: data.desconexion,
+        engagement: data.engagement,
         timestamp: new Date() // Esto registra hora, min y seg exactos
       }
     });

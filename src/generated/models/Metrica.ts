@@ -31,6 +31,7 @@ export type MetricaAvgAggregateOutputType = {
   interes: number | null
   aburrimiento: number | null
   desconexion: number | null
+  engagement: number | null
 }
 
 export type MetricaSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type MetricaSumAggregateOutputType = {
   interes: number | null
   aburrimiento: number | null
   desconexion: number | null
+  engagement: number | null
 }
 
 export type MetricaMinAggregateOutputType = {
@@ -47,6 +49,7 @@ export type MetricaMinAggregateOutputType = {
   interes: number | null
   aburrimiento: number | null
   desconexion: number | null
+  engagement: number | null
   eventoId: string | null
 }
 
@@ -57,6 +60,7 @@ export type MetricaMaxAggregateOutputType = {
   interes: number | null
   aburrimiento: number | null
   desconexion: number | null
+  engagement: number | null
   eventoId: string | null
 }
 
@@ -67,6 +71,7 @@ export type MetricaCountAggregateOutputType = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
   eventoId: number
   _all: number
 }
@@ -77,6 +82,7 @@ export type MetricaAvgAggregateInputType = {
   interes?: true
   aburrimiento?: true
   desconexion?: true
+  engagement?: true
 }
 
 export type MetricaSumAggregateInputType = {
@@ -84,6 +90,7 @@ export type MetricaSumAggregateInputType = {
   interes?: true
   aburrimiento?: true
   desconexion?: true
+  engagement?: true
 }
 
 export type MetricaMinAggregateInputType = {
@@ -93,6 +100,7 @@ export type MetricaMinAggregateInputType = {
   interes?: true
   aburrimiento?: true
   desconexion?: true
+  engagement?: true
   eventoId?: true
 }
 
@@ -103,6 +111,7 @@ export type MetricaMaxAggregateInputType = {
   interes?: true
   aburrimiento?: true
   desconexion?: true
+  engagement?: true
   eventoId?: true
 }
 
@@ -113,6 +122,7 @@ export type MetricaCountAggregateInputType = {
   interes?: true
   aburrimiento?: true
   desconexion?: true
+  engagement?: true
   eventoId?: true
   _all?: true
 }
@@ -210,6 +220,7 @@ export type MetricaGroupByOutputType = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
   eventoId: string
   _count: MetricaCountAggregateOutputType | null
   _avg: MetricaAvgAggregateOutputType | null
@@ -243,6 +254,7 @@ export type MetricaWhereInput = {
   interes?: Prisma.FloatFilter<"Metrica"> | number
   aburrimiento?: Prisma.FloatFilter<"Metrica"> | number
   desconexion?: Prisma.FloatFilter<"Metrica"> | number
+  engagement?: Prisma.FloatFilter<"Metrica"> | number
   eventoId?: Prisma.StringFilter<"Metrica"> | string
   evento?: Prisma.XOR<Prisma.EventoScalarRelationFilter, Prisma.EventoWhereInput>
 }
@@ -254,6 +266,7 @@ export type MetricaOrderByWithRelationInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
   eventoId?: Prisma.SortOrder
   evento?: Prisma.EventoOrderByWithRelationInput
 }
@@ -268,6 +281,7 @@ export type MetricaWhereUniqueInput = Prisma.AtLeast<{
   interes?: Prisma.FloatFilter<"Metrica"> | number
   aburrimiento?: Prisma.FloatFilter<"Metrica"> | number
   desconexion?: Prisma.FloatFilter<"Metrica"> | number
+  engagement?: Prisma.FloatFilter<"Metrica"> | number
   eventoId?: Prisma.StringFilter<"Metrica"> | string
   evento?: Prisma.XOR<Prisma.EventoScalarRelationFilter, Prisma.EventoWhereInput>
 }, "id">
@@ -279,6 +293,7 @@ export type MetricaOrderByWithAggregationInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
   eventoId?: Prisma.SortOrder
   _count?: Prisma.MetricaCountOrderByAggregateInput
   _avg?: Prisma.MetricaAvgOrderByAggregateInput
@@ -297,6 +312,7 @@ export type MetricaScalarWhereWithAggregatesInput = {
   interes?: Prisma.FloatWithAggregatesFilter<"Metrica"> | number
   aburrimiento?: Prisma.FloatWithAggregatesFilter<"Metrica"> | number
   desconexion?: Prisma.FloatWithAggregatesFilter<"Metrica"> | number
+  engagement?: Prisma.FloatWithAggregatesFilter<"Metrica"> | number
   eventoId?: Prisma.StringWithAggregatesFilter<"Metrica"> | string
 }
 
@@ -307,6 +323,7 @@ export type MetricaCreateInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
   evento: Prisma.EventoCreateNestedOneWithoutMetricasInput
 }
 
@@ -317,6 +334,7 @@ export type MetricaUncheckedCreateInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
   eventoId: string
 }
 
@@ -327,6 +345,7 @@ export type MetricaUpdateInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
   evento?: Prisma.EventoUpdateOneRequiredWithoutMetricasNestedInput
 }
 
@@ -337,6 +356,7 @@ export type MetricaUncheckedUpdateInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
   eventoId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -347,6 +367,7 @@ export type MetricaCreateManyInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
   eventoId: string
 }
 
@@ -357,6 +378,7 @@ export type MetricaUpdateManyMutationInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type MetricaUncheckedUpdateManyInput = {
@@ -366,6 +388,7 @@ export type MetricaUncheckedUpdateManyInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
   eventoId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -386,6 +409,7 @@ export type MetricaCountOrderByAggregateInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
   eventoId?: Prisma.SortOrder
 }
 
@@ -394,6 +418,7 @@ export type MetricaAvgOrderByAggregateInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
 }
 
 export type MetricaMaxOrderByAggregateInput = {
@@ -403,6 +428,7 @@ export type MetricaMaxOrderByAggregateInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
   eventoId?: Prisma.SortOrder
 }
 
@@ -413,6 +439,7 @@ export type MetricaMinOrderByAggregateInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
   eventoId?: Prisma.SortOrder
 }
 
@@ -421,6 +448,7 @@ export type MetricaSumOrderByAggregateInput = {
   interes?: Prisma.SortOrder
   aburrimiento?: Prisma.SortOrder
   desconexion?: Prisma.SortOrder
+  engagement?: Prisma.SortOrder
 }
 
 export type MetricaCreateNestedManyWithoutEventoInput = {
@@ -472,6 +500,7 @@ export type MetricaCreateWithoutEventoInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
 }
 
 export type MetricaUncheckedCreateWithoutEventoInput = {
@@ -481,6 +510,7 @@ export type MetricaUncheckedCreateWithoutEventoInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
 }
 
 export type MetricaCreateOrConnectWithoutEventoInput = {
@@ -519,6 +549,7 @@ export type MetricaScalarWhereInput = {
   interes?: Prisma.FloatFilter<"Metrica"> | number
   aburrimiento?: Prisma.FloatFilter<"Metrica"> | number
   desconexion?: Prisma.FloatFilter<"Metrica"> | number
+  engagement?: Prisma.FloatFilter<"Metrica"> | number
   eventoId?: Prisma.StringFilter<"Metrica"> | string
 }
 
@@ -529,6 +560,7 @@ export type MetricaCreateManyEventoInput = {
   interes: number
   aburrimiento: number
   desconexion: number
+  engagement: number
 }
 
 export type MetricaUpdateWithoutEventoInput = {
@@ -538,6 +570,7 @@ export type MetricaUpdateWithoutEventoInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type MetricaUncheckedUpdateWithoutEventoInput = {
@@ -547,6 +580,7 @@ export type MetricaUncheckedUpdateWithoutEventoInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type MetricaUncheckedUpdateManyWithoutEventoInput = {
@@ -556,6 +590,7 @@ export type MetricaUncheckedUpdateManyWithoutEventoInput = {
   interes?: Prisma.FloatFieldUpdateOperationsInput | number
   aburrimiento?: Prisma.FloatFieldUpdateOperationsInput | number
   desconexion?: Prisma.FloatFieldUpdateOperationsInput | number
+  engagement?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 
@@ -567,6 +602,7 @@ export type MetricaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   interes?: boolean
   aburrimiento?: boolean
   desconexion?: boolean
+  engagement?: boolean
   eventoId?: boolean
   evento?: boolean | Prisma.EventoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["metrica"]>
@@ -578,6 +614,7 @@ export type MetricaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   interes?: boolean
   aburrimiento?: boolean
   desconexion?: boolean
+  engagement?: boolean
   eventoId?: boolean
   evento?: boolean | Prisma.EventoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["metrica"]>
@@ -589,6 +626,7 @@ export type MetricaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   interes?: boolean
   aburrimiento?: boolean
   desconexion?: boolean
+  engagement?: boolean
   eventoId?: boolean
   evento?: boolean | Prisma.EventoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["metrica"]>
@@ -600,10 +638,11 @@ export type MetricaSelectScalar = {
   interes?: boolean
   aburrimiento?: boolean
   desconexion?: boolean
+  engagement?: boolean
   eventoId?: boolean
 }
 
-export type MetricaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "timestamp" | "atencion" | "interes" | "aburrimiento" | "desconexion" | "eventoId", ExtArgs["result"]["metrica"]>
+export type MetricaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "timestamp" | "atencion" | "interes" | "aburrimiento" | "desconexion" | "engagement" | "eventoId", ExtArgs["result"]["metrica"]>
 export type MetricaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   evento?: boolean | Prisma.EventoDefaultArgs<ExtArgs>
 }
@@ -626,6 +665,7 @@ export type $MetricaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     interes: number
     aburrimiento: number
     desconexion: number
+    engagement: number
     eventoId: string
   }, ExtArgs["result"]["metrica"]>
   composites: {}
@@ -1057,6 +1097,7 @@ export interface MetricaFieldRefs {
   readonly interes: Prisma.FieldRef<"Metrica", 'Float'>
   readonly aburrimiento: Prisma.FieldRef<"Metrica", 'Float'>
   readonly desconexion: Prisma.FieldRef<"Metrica", 'Float'>
+  readonly engagement: Prisma.FieldRef<"Metrica", 'Float'>
   readonly eventoId: Prisma.FieldRef<"Metrica", 'String'>
 }
     

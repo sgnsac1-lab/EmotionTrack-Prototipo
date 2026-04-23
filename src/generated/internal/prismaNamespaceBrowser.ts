@@ -127,6 +127,7 @@ export const MetricaScalarFieldEnum = {
   interes: 'interes',
   aburrimiento: 'aburrimiento',
   desconexion: 'desconexion',
+  engagement: 'engagement',
   eventoId: 'eventoId'
 } as const
 
